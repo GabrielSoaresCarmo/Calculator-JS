@@ -22,31 +22,31 @@ buttons.forEach((button) => {
             else {
                 switch (buttonText) {
                     case "%":
-                        console.log("percentage")
+                        percentage();
                         break;
 
                     case "CE":
-                        console.log("cancel entry")
+                        cancelEntry();
                         break;
 
                     case "C":
-                        console.log("clear")
+                        clear();
                         break;
 
                     case "⌫":
-                        console.log("erase")
+                        erase();
                         break;
 
                     case "n!":
-                        console.log("factorial")
+                        factorial(currentNumber);
                         break;
 
                     case "x²":
-                        console.log("square power")
+                        squarePower();
                         break;
 
                     case "√x":
-                        console.log("square root")
+                        squareRoot();
                         break;
 
                     case "=":
@@ -54,7 +54,7 @@ buttons.forEach((button) => {
                         break;
 
                     case "±":
-                        console.log("inverse")
+                        inverse();
                         break;
 
                     default:
@@ -67,6 +67,7 @@ buttons.forEach((button) => {
 
 /**
  * Adiciona o próximo algarismo do valor numérico ao número atual
+ * @param {string} digit - O digito a ser adicionado
  */
 function addDigit(digit) {
     if (digit === "," && currentNumber.includes(",")) {
@@ -87,6 +88,7 @@ function addDigit(digit) {
 
 /**
  * Atualiza o display do resultado conforme usuário digita
+ * @param {boolean} clear - Indica se o display deve ser limpo antes atualizar
  */
 function updateResult(clear = false) {
     result.innerHTML = clear ? 0 : currentNumber.replace(",", ".");
@@ -94,6 +96,7 @@ function updateResult(clear = false) {
 
 /**
  * Reconhece o operador matemático clicado
+ * @param {string} newOperator - Indica qual é o operador matemático básico
  */
 function setOperator(newOperator) {
     if (currentNumber) {
@@ -147,4 +150,117 @@ function calculate() {
         restart = true;
         updateResult();
     }
+}
+
+/**
+ * Quando apertado o botao de porcentagem, o valor que aparece no display do resultado se torna um percentual
+ * Se houver uma operaçao pendente e efetuado o calculo
+ */
+function percentage() {
+    let auxPer = parseFloat(currentNumber.replace(",", ".")) / 100;
+    if(operator) {
+        switch (operator) {
+            case "+":
+                auxPer = firstOperand * auxPer;
+                break;
+
+            case "-":
+                auxPer = firstOperand * auxPer;
+        
+            default:
+                break;
+        }
+        currentNumber = auxPer.toString();
+        calculate();
+    }
+    else{
+        currentNumber = auxPer.toString();
+        updateResult();
+    }
+}
+
+/**
+ * Apaga a numero digitado na calculadora
+ */
+function cancelEntry() {
+    currentNumber = "";
+    updateResult(true);
+}
+
+/**
+ * Limpa todas as operaçoes da calculadora, restaura ao estado inicial
+ */
+function clear(){
+    currentNumber = "";
+    firstOperand = null;
+    operator = null;
+    restart = false;
+    updateResult(true);
+}
+
+/**
+ * Apaga o ultimo algarismo digitado na calculadora
+ */
+function erase() {
+    currentNumber = currentNumber.substring(0, currentNumber.length - 1);
+    if(currentNumber == "") {
+        updateResult(true);
+    }
+    else{
+        updateResult();
+    }
+}
+
+/**
+ * Aplica o fatorial no número digitado na calculadora
+ * @param {number} times - O número para calcular o fatorial
+ * @return {number} O fatorial do número
+ * @throws {Error} Se o número não for inteiro e positivo
+ */
+function factorial(times) {
+    if(!times.includes(",")) {
+        if(times > 0) {
+            let auxFac = 1;
+            for(cont=2; cont<=times; cont++) {
+                auxFac *= cont;
+            }
+            currentNumber = auxFac.toString();
+        }
+        else {
+            if(times == 0) {
+                currentNumber = "1";
+            }
+        }
+    }
+    else {
+        window.alert("Apenas números interiros e positivos tem fatorial!");
+    }
+    updateResult();
+}
+
+/**
+ * Imprime a potência quadrada do número digitado na calculadora
+ */
+function squarePower() {
+    let auxSqpr = parseFloat(currentNumber) ** 2;
+    currentNumber = auxSqpr.toString();
+    updateResult();
+}
+
+/**
+ * Imprime a raiz quadrada do número digitado na calculadora
+ */
+function squareRoot(){
+    let auxSqrt = parseFloat(currentNumber) ** (1/2);
+    currentNumber = auxSqrt.toString();
+    updateResult();
+}
+
+/**
+ * Inverte o sinal do número digitado na calculadora
+ */
+function inverse() {
+    let auxInv = parseFloat(currentNumber) * -1;
+    currentNumber = auxInv.toString();
+    updateResult();
 }
